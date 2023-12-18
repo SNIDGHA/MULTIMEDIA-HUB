@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+      <item
+          android:id="@+id/navigation_images"
+          android:title="IMAGES"
+          android:icon="@drawable/baseline_image_24"/>.
+    <item
+        android:id="@+id/navigation_audiofiles"
+        android:title="AUDIO FILES"
+        android:icon="@drawable/baseline_image_24" />.
+    <item
+        android:id="@+id/navigation_VIDEOS"
+        android:title="VIDEOS"
+        android:icon="@drawable/baseline_image_24"/>.
+    <item
+        android:id="@+id/navigation_pdf"
+        android:title="PDF files"
+        android:icon="@drawable/baseline_image_24"/>.
+
+</menu>
