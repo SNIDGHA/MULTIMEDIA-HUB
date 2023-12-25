@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="videos">VIDEOS</string>
+    <string name="audio_files">AUDIO FILES</string>
+    <string name="images">IMAGES</string>
+    <string name="pdf_files">PDF files</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="audios">AUDIOs</string>
+    <string name="click_me">Click Me!</string>
+    <string name="hello_world">Hello, World!</string>
+    <string name="Hello_world">Hello, World!</string>
+    <string name="Click_me">Click Me!</string>
+    <string name="the_multimedia_hub">THE MULTIMEDIA HUB</string>
 </resources>
