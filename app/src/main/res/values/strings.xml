@@ -12,4 +12,6 @@
     <string name="Hello_world">Hello, World!</string>
     <string name="Click_me">Click Me!</string>
     <string name="the_multimedia_hub">THE MULTIMEDIA HUB</string>
+    <string name="description">Description</string>
+    <string name="heading">Heading</string>
 </resources>
