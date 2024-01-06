@@ -1,39 +1,50 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 
-class PdfAdapter(var context: Context, private var pdffiles: List<String>):
-    RecyclerView.Adapter<PdfAdapter.MyViewHolder>() {
+class PdfAdapter(
+    private val context: Context,
+    private val pdfFiles: List<File>,
+) :
+    RecyclerView.Adapter<PdfAdapter.MainViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
+        return MainViewHolder(
+            LayoutInflater.from(context).inflate(R.layout.pdf_view, parent, false)
+        )
+    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val inflator = LayoutInflater.from(context)
-        val v: View = inflator.inflate(R.layout.pdf_view,parent,false)
-        return MyViewHolder(v)
+    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+        val file:File=pdfFiles[position]
+        holder.txtName.text = pdfFiles[position].name
+        holder.txtName.isSelected = true
+        holder.itemView.setOnClickListener {
+            val intent= Intent(context,PdfActivity::class.java)
+            intent.putExtra("Name",file.name)
+            intent.putExtra("Uri",file.toURI())
+            context.startActivity(intent) }
     }
 
     override fun getItemCount(): Int {
-        return pdffiles.size
+        return pdfFiles.size
     }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val path = pdffiles[position]
-        val pdfFile = File(path)
-        val fileName = pdfFile.name
-        holder.filename.text = fileName
-    }
-
-
-    class MyViewHolder(itemview: View) : RecyclerView.ViewHolder(itemview){
-        var filename: TextView
+    class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        @JvmField
+        var txtName: TextView
+        @JvmField
+        var cardView: CardView
 
         init {
-            filename = itemview.findViewById(R.id.file_name)
+            txtName = itemView.findViewById(R.id.pdf_textView)
+            cardView = itemView.findViewById(R.id.pdf_cardView)
         }
     }
+
 }

@@ -2,24 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.myapplication">
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32">
 
-    </uses-permission>
-
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/untitled_design"
-        android:label="@string/app_name"
-        android:roundIcon="@drawable/untitled_design"
+        android:icon="@drawable/imageedit_1_8518682408"
+        android:label="MUTIMEDIA HUB"
+        android:roundIcon="@drawable/imageedit_1_8518682408"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="34">
         <activity
-            android:name=".MainActivity1"
+            android:name=".ImageFullActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".PdfActivity"
+            android:exported="false"/>
+        <activity android:name=".MainActivity1"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
