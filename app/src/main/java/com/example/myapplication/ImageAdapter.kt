@@ -1,50 +1,48 @@
 package com.example.myapplication
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 
-class ImageAdapter(private var context: Context, private var imagesList: ArrayList<ImageModel>):
-        RecyclerView.Adapter<ImageAdapter.ImageViewHolder>(){
 
-            class ImageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
-                var image:ImageView?=null
-
-                init {
-                    image=itemView.findViewById(R.id.imageView)
-                }
-            }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-       val inflater =LayoutInflater.from(parent.context)
-        val view =inflater.inflate(R.layout.image_view,parent,false)
-        return ImageViewHolder(view)
+class ImageAdapter(
+    private val context : Context,
+    private val list : ArrayList<ImageModel>,
+) :
+    RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder {
+        val view : View = LayoutInflater.from(context).inflate(
+            R.layout.image_view, parent, false
+        )
+        return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-   return imagesList.size
+    override fun onBindViewHolder(holder : ViewHolder, position : Int) {
+        Glide.with(context).load(
+            list[position].imagePath
+        ).into(holder.imageView)
+        holder.imageView.setOnClickListener {
+            val parseData : String = list[position].imagePath.toString()
+            context.startActivity(
+                Intent(context, ImageFullActivity::class.java)
+                    .putExtra("parseData", parseData)
+            )
+        }
     }
 
-    @SuppressLint("SuspiciousIndentation")
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-     val currentImage=imagesList[position]
-        Glide.with(context)
-            .load(currentImage.imagePath)
-            .apply(RequestOptions().centerCrop())
-            .into(holder.image!!)
+    override fun getItemCount() : Int {
+        return list.size
+    }
 
-        val intent= Intent(context,ImageFullActivity::class.java)
-        intent.putExtra("path",currentImage.imagePath)
-        intent.putExtra("name",currentImage.imageName)
-        context.startActivity(intent)
-
+    inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+        var imageView : ImageView
+        init {
+            imageView = itemView.findViewById(R.id.imageView)
+        }
     }
 }

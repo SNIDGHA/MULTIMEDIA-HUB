@@ -17,7 +17,9 @@ class MainActivity1 : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.ic_images ->replaceFragment(ImageFragment())
-
+                R.id.ic_pdf->replaceFragment(PdfFragment())
+                R.id.ic_audio->replaceFragment(AudioFragment())
+                R.id.ic_videos->replaceFragment(VideoFragment())
                 else->{
 
                 }

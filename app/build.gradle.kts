@@ -70,9 +70,19 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation ("androidx.media3:media3-exoplayer:1.0.2")
+    implementation ("androidx.media3:media3-exoplayer-dash:1.0.2")
+    implementation ("androidx.media3:media3-ui:1.0.2")
+    implementation ("androidx.media3:media3-exoplayer-hls:1.0.2")
+    implementation ("androidx.media3:media3-datasource-okhttp:1.0.2")
+
     kotlinBuildToolsApiClasspath("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.github.barteksc:android-pdf-viewer:2.8.2")
     implementation ("com.karumi:dexter:6.2.3")
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+    kotlinBuildToolsApiClasspath("org.hamcrest:hamcrest-core:1.3")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -80,4 +90,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
 }
