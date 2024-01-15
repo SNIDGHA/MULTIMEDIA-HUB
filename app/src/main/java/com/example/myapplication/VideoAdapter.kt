@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 
-class VideoAdapter internal constructor(
+class VideoAdapter(
     var context : Context,
     videosList : ArrayList<ModelVideo>,
 ) :

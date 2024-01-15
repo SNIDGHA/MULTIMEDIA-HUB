@@ -113,8 +113,7 @@ class MusicPlayerActivity : AppCompatActivity() {
     companion object {
         fun convertToMMSS(duration: String): String {
             val millis = duration.toLong()
-            return String.format(
-                "%02d:%02d",
+            return String.format(                "%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1)
             )

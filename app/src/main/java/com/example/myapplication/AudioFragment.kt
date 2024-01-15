@@ -2,10 +2,14 @@ package com.example.myapplication
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -91,25 +94,46 @@ class AudioFragment : Fragment() {
             MediaStore.Audio.Media.DURATION
         )
         val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
-        val cursor=requireContext().contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        val songUri : Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else
+            EXTERNAL_CONTENT_URI
+        val cursor = requireContext().contentResolver.query(
+            songUri,
             projection,
-            selection,
             null,
-            null
+            null,
+            MediaStore.Audio.Media.TITLE
         )
-        if (cursor != null) while (cursor.moveToNext()) {
+        /*if (cursor != null) while (cursor.moveToNext()) {
                 val songData = AudioModel(cursor.getString(1), cursor.getString(0), cursor.getString(2))
                 if (File(songData.path).exists()) songsList.add(songData)
+            }*/
+        val idColumn = cursor!!.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+        val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+
+        while (cursor.moveToNext()) {
+            val id : Long = cursor.getLong(idColumn)
+            var name : String = cursor.getString(nameColumn)
+
+            val duration : Int = cursor.getInt(durationColumn)
+
+
+            val uri : Uri =
+                ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
+            val song = AudioModel(uri.toString(), name, duration.toString())
+            songsList.add(song)}
+
+
+            if (songsList.size == 0) {
+                noMusicTextView!!.visibility = View.VISIBLE
+            } else {
+                //recyclerview
+                recyclerView!!.layoutManager = LinearLayoutManager(context)
+                recyclerView!!.adapter = MusicListAdapter(songsList, requireContext())
             }
-        if (songsList.size == 0) {
-            noMusicTextView!!.visibility = View.VISIBLE
-        } else {
-            //recyclerview
-            recyclerView!!.layoutManager = LinearLayoutManager(context)
-            recyclerView!!.adapter = MusicListAdapter(songsList,requireContext())
         }
-    }
 
     private fun checkPermission() : Boolean {
         val result = ContextCompat.checkSelfPermission(

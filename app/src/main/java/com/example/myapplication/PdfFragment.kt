@@ -1,22 +1,22 @@
 package com.example.myapplication
 
-import android.Manifest
+
+
+
 import android.os.Bundle
-import android.os.Environment
-import androidx.fragment.app.Fragment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.ProgressBar
+import android.widget.SearchView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import java.io.File
+import java.util.Locale
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,17 +33,19 @@ class PdfFragment : Fragment() {
     private var param1 : String? = null
     private var param2 : String? = null
 
-    private var adapter : PdfAdapter? = null
-    private var pdfList : MutableList<File>? = null
     private var recyclerView : RecyclerView? = null
-    private var noPdfTextView : TextView? = null
-
+    private var adapter : PdfAdapter? = null
+    private var list : List<File>? = null
+    private var progressBar : ProgressBar? = null
+    private var searchView : SearchView? = null
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+
         }
+
     }
 
     override fun onCreateView(
@@ -51,6 +53,7 @@ class PdfFragment : Fragment() {
         savedInstanceState : Bundle?,
     ) : View? {
         return inflater.inflate(R.layout.fragment_pdf, container, false)
+
     }
 
     companion object {
@@ -73,44 +76,71 @@ class PdfFragment : Fragment() {
             }
     }
 
-    private fun runtimePermission() {
-        Dexter.withContext(requireContext())
-            .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(permissionGrantedResponse : PermissionGrantedResponse) {}
-                override fun onPermissionDenied(permissionDeniedResponse : PermissionDeniedResponse) {}
-                override fun onPermissionRationaleShouldBeShown(
-                    permissionRequest : PermissionRequest,
-                    permissionToken : PermissionToken
-                ) {
-                    permissionToken.continuePermissionRequest()
+        private fun setupsearch() {
+            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query : String) : Boolean {
+                    return false
                 }
-            }).check()
-    }
 
-    private fun findPdf(file : File) : ArrayList<File> {
-        val arrayList = ArrayList<File>()
-        val files = file.listFiles()
-        for (singleFile in files!!) {
-            if (singleFile.isDirectory && singleFile.isHidden) {
-                arrayList.addAll(findPdf(singleFile))
-            } else {
-                if (singleFile.name.endsWith(".pdf")) {
-                    arrayList.add(singleFile)
+                override fun onQueryTextChange(newText : String) : Boolean {
+                    filter(newText)
+                    return false
+                }
+            })
+        }
+
+        private fun filter(newText : String) {
+            val filterlist : MutableList<File> = ArrayList()
+            for (item in list!!) {
+                if (item.name.lowercase(Locale.getDefault()).contains(newText)) {
+                    filterlist.add(item)
                 }
             }
+            adapter!!.filterlist(filterlist)
         }
-        return arrayList
-    }
 
-    fun displayPdf() {
-        recyclerView = view?.findViewById(R.id.recycler_view)
-        recyclerView!!.layoutManager = LinearLayoutManager(context)
-        pdfList = ArrayList()
-        (pdfList as ArrayList<File>).addAll(findPdf(Environment.getExternalStorageDirectory()))
-        adapter = PdfAdapter(requireContext(), pdfList as ArrayList<File>)
-        recyclerView!!.adapter = adapter
+    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+          recyclerView = view.findViewById(R.id.rv_files)
+            progressBar = view.findViewById(R.id.progressBar)
+            searchView = view.findViewById(R.id.searchView)
+            list = ArrayList()
+            progressBar!!.visibility = View.VISIBLE
+            recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView!!.setHasFixedSize(true)
+            setupsearch()
+            progressBar()
+            getallFiles()
+        }
 
+        private fun progressBar() {
+            progressBar!!.visibility = View.GONE
+            if (adapter!!.itemCount == 0) {
+                Toast.makeText(requireContext(), "No Pdf File In Phone", Toast.LENGTH_SHORT).show()
+            } else {
+                recyclerView!!.visibility = View.VISIBLE
+            }
+        }
+
+        private fun getallFiles() : List<File> {
+            val uri = MediaStore.Files.getContentUri("external")
+            val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
+            val selection = MediaStore.Files.FileColumns.MIME_TYPE + "=?"
+            val selectionArgs = arrayOf("application/pdf")
+            val cursor = requireContext().contentResolver.query(uri, projection, selection, selectionArgs, null)
+            val list = ArrayList<File>()
+            val pdfPathIndex = cursor!!.getColumnIndex(MediaStore.Files.FileColumns.DATA)
+            while (cursor.moveToNext()) {
+                if (pdfPathIndex != -1) {
+                    val pdfPath = cursor.getString(pdfPathIndex)
+                    val pdfFile = File(pdfPath)
+                    if (pdfFile.exists() && pdfFile.isFile) {
+                        list.add(pdfFile)
+                    }
+                }
+            }
+            cursor.close()
+            return list
+        }
     }
-}
 
