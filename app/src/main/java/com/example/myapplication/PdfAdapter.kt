@@ -1,7 +1,9 @@
 package com.example.myapplication
 
+
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
@@ -14,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 
 import java.io.File
 
-class PdfAdapter(var activity : Activity, var list : List<File>) :
+@Suppress("DEPRECATION")
+class PdfAdapter(private var activity : Context, private var list :  ArrayList<File>?) :
     RecyclerView.Adapter<PdfAdapter.ViewHolder>() {
     @SuppressLint("NotifyDataSetChanged")
-    fun filterlist(list : List<File>) {
+    fun filterlist(list : ArrayList<File>) {
         this.list = list
         notifyDataSetChanged()
     }
@@ -29,7 +32,7 @@ class PdfAdapter(var activity : Activity, var list : List<File>) :
     }
 
     override fun onBindViewHolder(holder : ViewHolder, position : Int) {
-        val file = list[position]
+        val file = list!![position]
         holder.name.text = file.name
         holder.path.text = file.path
         holder.itemView.setOnClickListener {
@@ -39,7 +42,7 @@ class PdfAdapter(var activity : Activity, var list : List<File>) :
             activity.startActivity(intent)
         }
         holder.share.setOnClickListener {
-            val intent = ShareCompat.IntentBuilder.from(activity).setType("application/pdf")
+            val intent = ShareCompat.IntentBuilder.from(activity as Activity).setType("application/pdf")
                 .setStream(Uri.parse(file.path)).setChooserTitle("Choose app")
                 .createChooserIntent()
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -48,7 +51,7 @@ class PdfAdapter(var activity : Activity, var list : List<File>) :
     }
 
     override fun getItemCount() : Int {
-        return list.size
+        return list!!.size
     }
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

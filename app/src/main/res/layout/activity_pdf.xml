@@ -12,7 +12,7 @@
         android:id="@+id/materialToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/pink"
         android:elevation="10dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"

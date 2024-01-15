@@ -1,8 +1,5 @@
 package com.example.myapplication
 
-
-
-
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -35,7 +32,7 @@ class PdfFragment : Fragment() {
 
     private var recyclerView : RecyclerView? = null
     private var adapter : PdfAdapter? = null
-    private var list : List<File>? = null
+    private var list : ArrayList<File>? = null
     private var progressBar : ProgressBar? = null
     private var searchView : SearchView? = null
     override fun onCreate(savedInstanceState : Bundle?) {
@@ -81,7 +78,6 @@ class PdfFragment : Fragment() {
                 override fun onQueryTextSubmit(query : String) : Boolean {
                     return false
                 }
-
                 override fun onQueryTextChange(newText : String) : Boolean {
                     filter(newText)
                     return false
@@ -90,7 +86,7 @@ class PdfFragment : Fragment() {
         }
 
         private fun filter(newText : String) {
-            val filterlist : MutableList<File> = ArrayList()
+            val filterlist : ArrayList<File> = ArrayList()
             for (item in list!!) {
                 if (item.name.lowercase(Locale.getDefault()).contains(newText)) {
                     filterlist.add(item)
@@ -104,10 +100,10 @@ class PdfFragment : Fragment() {
           recyclerView = view.findViewById(R.id.rv_files)
             progressBar = view.findViewById(R.id.progressBar)
             searchView = view.findViewById(R.id.searchView)
-            list = ArrayList()
             progressBar!!.visibility = View.VISIBLE
             recyclerView?.layoutManager = LinearLayoutManager(requireContext())
             recyclerView!!.setHasFixedSize(true)
+            recyclerView?.adapter=PdfAdapter(requireContext(), list)
             setupsearch()
             progressBar()
             getallFiles()
