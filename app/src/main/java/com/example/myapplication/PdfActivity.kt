@@ -31,12 +31,14 @@ class PdfActivity : AppCompatActivity() {
         share = findViewById(R.id.share)
         title = findViewById(R.id.file_name)
         pdfView = findViewById(R.id.pdfView)
-        back()
+
         share()
         getIntentData()
         showPdf()
         fullScreen()
-    }
+            back()
+        }
+
 
     private fun fullScreen() {
         pdfView!!.setOnClickListener {
@@ -63,8 +65,13 @@ class PdfActivity : AppCompatActivity() {
     }
 
     private fun back() {
-        back!!.setOnClickListener {  }
+            back!!.setOnClickListener {
+                val intent = Intent(this, PdfActivity::class.java)
+                startActivity(intent)
+            }
+
     }
+
 
     private fun share() {
         share!!.setOnClickListener {

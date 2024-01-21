@@ -1,15 +1,10 @@
 package com.example.myapplication
 
 import android.os.Bundle
-import android.os.Handler
 import android.widget.ImageView
 import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.MyMediaPlayer.getInstance
-import java.io.IOException
-import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 
 @Suppress("DEPRECATION")
@@ -24,7 +19,7 @@ class MusicPlayerActivity : AppCompatActivity() {
     var musicIcon: ImageView? = null
     private var songsList: ArrayList<AudioModel>? = null
     private var currentSong: AudioModel? = null
-    var mediaPlayer = getInstance()
+    //var mediaPlayer = getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music_player)
@@ -38,8 +33,8 @@ class MusicPlayerActivity : AppCompatActivity() {
         musicIcon = findViewById(R.id.music_icon_big)
         with(titleTv) { this!!.isSelected = true }
         songsList = intent.getSerializableExtra("LIST") as ArrayList<AudioModel>?
-        setResourcesWithMusic()
-        runOnUiThread(object : Runnable {
+        //setResourcesWithMusic()
+        /*runOnUiThread(object : Runnable {
             override fun run() {
                 if (mediaPlayer != null) {
                     setProgress(mediaPlayer!!.currentPosition)
@@ -66,11 +61,11 @@ class MusicPlayerActivity : AppCompatActivity() {
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar) {}
             })
-        }
+        }*/
     }
 
-    private fun setResourcesWithMusic() {
-        currentSong = songsList!![MyMediaPlayer.currentIndex]
+    /*private fun setResourcesWithMusic() {
+        currentSong = songsList!![ExoPlayer.currentIndex]
         titleTv!!.text = currentSong!!.title
         totalTimeTv!!.text = convertToMMSS(currentSong!!.duration)
         pausePlay!!.setOnClickListener { pausePlay() }
@@ -93,22 +88,22 @@ class MusicPlayerActivity : AppCompatActivity() {
     }
 
     private fun playNextSong() {
-        if (MyMediaPlayer.currentIndex == songsList!!.size - 1) return
-        MyMediaPlayer.currentIndex += 1
+        if (ExoPlayer.currentIndex == songsList!!.size - 1) return
+      ExoPlayer.currentIndex += 1
         mediaPlayer!!.reset()
         setResourcesWithMusic()
     }
 
     private fun playPreviousSong() {
-        if (MyMediaPlayer.currentIndex == 0) return
-        MyMediaPlayer.currentIndex -= 1
+        if (ExoPlayer.currentIndex == 0) return
+        ExoPlayer.currentIndex -= 1
         mediaPlayer!!.reset()
         setResourcesWithMusic()
     }
 
     private fun pausePlay() {
         if (mediaPlayer!!.isPlaying) mediaPlayer!!.pause() else mediaPlayer!!.start()
-    }
+    }*/
 
     companion object {
         fun convertToMMSS(duration: String): String {

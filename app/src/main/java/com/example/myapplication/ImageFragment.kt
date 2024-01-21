@@ -1,13 +1,11 @@
 package com.example.myapplication
 
 import android.content.pm.PackageManager
-
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,6 +26,7 @@ class ImageFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
 
     private var recyclerView: RecyclerView? = null
     private var allPictures: ArrayList<ImageModel>? = null
@@ -81,7 +80,6 @@ class ImageFragment : Fragment() {
             allPictures = getAllImages()
             recyclerView?.adapter =
                 allPictures?.let { context?.let { it1 -> ImageAdapter(it1, it) } }
-
 
         }
 

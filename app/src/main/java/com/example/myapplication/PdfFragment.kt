@@ -2,17 +2,22 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.webkit.MimeTypeMap
+import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
-import java.util.Locale
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -32,9 +37,10 @@ class PdfFragment : Fragment() {
 
     private var recyclerView : RecyclerView? = null
     private var adapter : PdfAdapter? = null
-    private var list : ArrayList<File>? = null
+    private lateinit var list : ArrayList<File>
     private var progressBar : ProgressBar? = null
-    private var searchView : SearchView? = null
+    private lateinit var searchView : EditText
+
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -73,70 +79,96 @@ class PdfFragment : Fragment() {
             }
     }
 
-        private fun setupsearch() {
-            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query : String) : Boolean {
-                    return false
-                }
-                override fun onQueryTextChange(newText : String) : Boolean {
-                    filter(newText)
-                    return false
-                }
-            })
-        }
-
-        private fun filter(newText : String) {
-            val filterlist : ArrayList<File> = ArrayList()
-            for (item in list!!) {
-                if (item.name.lowercase(Locale.getDefault()).contains(newText)) {
-                    filterlist.add(item)
-                }
+    private fun setupsearch() {
+        searchView.setOnEditorActionListener { textView, i, keyEvent ->
+            if (i == EditorInfo.IME_ACTION_SEARCH
+                        || i == EditorInfo.IME_ACTION_DONE
+                        || (keyEvent != null && keyEvent.action == KeyEvent.ACTION_DOWN
+                        && keyEvent.keyCode == KeyEvent.KEYCODE_ENTER))
+            {
+             filter(textView.toString())
             }
-            adapter!!.filterlist(filterlist)
+             false
         }
+    }
+    private fun searchData(){
+        searchView.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(p0 : CharSequence?, p1 : Int, p2 : Int, p3 : Int) {
+
+            }
+
+            override fun onTextChanged(p0 : CharSequence?, p1 : Int, p2 : Int, p3 : Int) {
+               filter(p0.toString())
+            }
+
+            override fun afterTextChanged(p0 : Editable?) {
+
+            }
+
+        })
+    }
+
+        private fun filter(text : String) {
+       val filteredlist : ArrayList<File> = ArrayList()
+        for (item in list) {
+            if (item.name.lowercase().contains(text.lowercase())) {
+                filteredlist.add(item)
+            }
+        }
+        adapter!!.filterlist(filteredlist)
+            if(filteredlist.isEmpty()){
+                Toast.makeText(requireContext(), "NO DATA FOUND", Toast.LENGTH_SHORT).show()
+            }
+    }
 
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-          recyclerView = view.findViewById(R.id.rv_files)
-            progressBar = view.findViewById(R.id.progressBar)
-            searchView = view.findViewById(R.id.searchView)
-            progressBar!!.visibility = View.VISIBLE
-            recyclerView?.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView!!.setHasFixedSize(true)
-            recyclerView?.adapter=PdfAdapter(requireContext(), list)
-            setupsearch()
-            progressBar()
-            getallFiles()
-        }
+        recyclerView = view.findViewById(R.id.rv_files)
+        progressBar = view.findViewById(R.id.progressBar)
+        searchView = view.findViewById(R.id.searchView)
+        searchView.clearFocus()
+        progressBar!!.visibility = View.VISIBLE
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView!!.setHasFixedSize(true)
+        list=getallFiles()
+        adapter = PdfAdapter(requireActivity(), list)
+        recyclerView?.adapter = adapter
 
-        private fun progressBar() {
-            progressBar!!.visibility = View.GONE
-            if (adapter!!.itemCount == 0) {
-                Toast.makeText(requireContext(), "No Pdf File In Phone", Toast.LENGTH_SHORT).show()
-            } else {
-                recyclerView!!.visibility = View.VISIBLE
-            }
-        }
+//        getallFiles()
 
-        private fun getallFiles() : List<File> {
-            val uri = MediaStore.Files.getContentUri("external")
-            val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
-            val selection = MediaStore.Files.FileColumns.MIME_TYPE + "=?"
-            val selectionArgs = arrayOf("application/pdf")
-            val cursor = requireContext().contentResolver.query(uri, projection, selection, selectionArgs, null)
-            val list = ArrayList<File>()
-            val pdfPathIndex = cursor!!.getColumnIndex(MediaStore.Files.FileColumns.DATA)
-            while (cursor.moveToNext()) {
-                if (pdfPathIndex != -1) {
-                    val pdfPath = cursor.getString(pdfPathIndex)
-                    val pdfFile = File(pdfPath)
-                    if (pdfFile.exists() && pdfFile.isFile) {
-                        list.add(pdfFile)
-                    }
-                }
-            }
-            cursor.close()
-            return list
+        progressBar()
+        searchData()
+        setupsearch()
+    }
+
+    private fun progressBar() {
+        progressBar!!.visibility = View.GONE
+        if (adapter!!.itemCount == 0) {
+            Toast.makeText(requireContext(), "No Pdf File In Phone", Toast.LENGTH_SHORT).show()
+        } else {
+            recyclerView!!.visibility = View.VISIBLE
         }
     }
+
+    private fun getallFiles() : ArrayList<File> {
+        val uri = MediaStore.Files.getContentUri("external")
+        val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
+        val mime = MediaStore.Files.FileColumns.MIME_TYPE+"=?"
+        val mimiType= MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf")
+        val args= arrayOf(mimiType)
+        val cursor = requireContext().contentResolver.query(uri, projection, mime, args, null)
+        val list = ArrayList<File>()
+        val pdfPathIndex = cursor!!.getColumnIndex(MediaStore.Files.FileColumns.DATA)
+        while (cursor.moveToNext()) {
+            if (pdfPathIndex != -1) {
+                val pdfPath = cursor.getString(pdfPathIndex)
+                val pdfFile = File(pdfPath)
+                if (pdfFile.exists() && pdfFile.isFile) {
+                    list.add(pdfFile)
+                }
+            }
+        }
+        return list
+    }
+}
 

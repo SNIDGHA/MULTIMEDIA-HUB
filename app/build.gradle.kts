@@ -77,9 +77,10 @@ dependencies {
     implementation ("androidx.media3:media3-exoplayer-hls:1.0.2")
     implementation ("androidx.media3:media3-datasource-okhttp:1.0.2")
 
+
     kotlinBuildToolsApiClasspath("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.github.barteksc:android-pdf-viewer:2.8.2")
-    implementation ("com.karumi:dexter:6.2.3")
+
     implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
     kotlinBuildToolsApiClasspath("org.hamcrest:hamcrest-core:1.3")
 

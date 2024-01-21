@@ -1,5 +1,4 @@
 @file:Suppress("DEPRECATION")
-
 package com.example.myapplication
 
 
@@ -7,22 +6,27 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.DefaultDataSourceFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.ui.PlayerView
 
 
-@Suppress("DEPRECATION")
-class VideoPlayerActivity: AppCompatActivity() {
+
+@UnstableApi class VideoPlayerActivity: AppCompatActivity() {
     private var videoId : Long = 0
-    private var playerView : PlayerView? = null
-    private var player : SimpleExoPlayer? = null
+    private lateinit var playerView : PlayerView
+    private lateinit var player : ExoPlayer
+
+    private var playWhenReady = true
+    private var mediaItemIndex :Int?=null
+    private var playbackPosition = 0L
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_videos)
@@ -34,27 +38,33 @@ class VideoPlayerActivity: AppCompatActivity() {
         playerView = findViewById(R.id.playerView)
     }
 
-    private fun initializePlayer() {
-        player = SimpleExoPlayer.Builder(this).build()
-        playerView!!.player = player
+    private fun  initializePlayer() {
+        Log.e("check video","running")
+        player =ExoPlayer.Builder(this).build()
+        playerView.player
         val videoUri =
             ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoId)
         val mediaSource = buildMediaSource(videoUri)
-        player!!.prepare(mediaSource)
-        player!!.playWhenReady = true
+        player.prepare(mediaSource)
+        player.play()
     }
 
     private fun buildMediaSource(uri : Uri) : MediaSource {
-        val dataSourceFactory : DataSource.Factory =
+        Log.i("check working","working")
+        val dataSourceFactory =
             DefaultDataSourceFactory(this, getString(R.string.app_name))
         return ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri))
+
     }
 
     private fun releasePlayer() {
-        if (player != null) {
-            player!!.release()
-            player = null
+        player.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            mediaItemIndex = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.release()
         }
+
     }
 
     override fun onStart() {

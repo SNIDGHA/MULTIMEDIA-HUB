@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.GridLayoutManager
@@ -31,7 +32,7 @@ class VideoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1 : String? = null
     private var param2 : String? = null
-    private val videosList = ArrayList<ModelVideo>()
+    private val videosList = ArrayList<Video>()
     private var adapterVideoList : VideoAdapter? = null
     private var recyclerView : RecyclerView? = null
     override fun onCreateView(
@@ -77,9 +78,10 @@ class VideoFragment : Fragment() {
     private fun initializeViews() {
         recyclerView = view?.findViewById(R.id.recyclerView_videos)
         recyclerView?.layoutManager = GridLayoutManager(requireContext(), 3) //3 = column count
-        adapterVideoList = VideoAdapter(requireContext(), videosList)
+        adapterVideoList = VideoAdapter(requireContext(),requireActivity(), getMediaItems(), videosList)
         recyclerView?.adapter = adapterVideoList
         loadVideos()
+
 
 
         /*if (ContextCompat.checkSelfPermission(
@@ -149,19 +151,38 @@ class VideoFragment : Fragment() {
                             min
                         ) + ":" + java.lang.String.format(Locale.UK, "%02d", sec)
                     }
-                    videosList.add(ModelVideo(id, data, title, duration_formatted))
+                    videosList.add(Video(id,data, title , duration_formatted))
 
-                    requireActivity().runOnUiThread(Runnable {
+                    requireActivity().runOnUiThread {
                         /*adapterVideoList!!.notifyItemInserted(
                             videosList.size - 1
                         )*/
                         adapterVideoList?.notifyDataSetChanged()
-                    })
+                    }
 
                 }
+                getMediaItems()
             }
         }
     }.start()
+    private fun getMediaItems(): MutableList<MediaItem> {
+        val mediaItems = ArrayList<MediaItem>()
 
+        for (video in videosList) {
+            mediaItems.add(
+                MediaItem.Builder()
+                    .setUri(video.data)
+                    .setMediaMetadata(getMetaData(video))
+                    .build()
+            )
+        }
+        return mediaItems
+    }
+
+    private fun getMetaData(video:Video): androidx.media3.common.MediaMetadata {
+        return androidx.media3.common.MediaMetadata.Builder()
+            .setTitle(video.title)
+            .build()
+    }
 }
 

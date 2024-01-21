@@ -1,13 +1,13 @@
 package com.example.myapplication
 
-import android.media.MediaPlayer
+import androidx.media3.exoplayer.ExoPlayer
 
 
-object MyMediaPlayer {
-    private var instance: MediaPlayer? = null
-    fun getInstance(): MediaPlayer? {
+object Exoplayer{
+    private var instance:ExoPlayer? = null
+    fun getInstance(): ExoPlayer? {
         if (instance == null) {
-            instance = MediaPlayer()
+            //instance = ExoPlayer()
         }
         return instance
     }
