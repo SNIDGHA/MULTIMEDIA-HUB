@@ -78,7 +78,7 @@ class VideoFragment : Fragment() {
     private fun initializeViews() {
         recyclerView = view?.findViewById(R.id.recyclerView_videos)
         recyclerView?.layoutManager = GridLayoutManager(requireContext(), 3) //3 = column count
-        adapterVideoList = VideoAdapter(requireContext(),requireActivity(), getMediaItems(), videosList)
+        adapterVideoList = VideoAdapter(requireContext(),requireActivity(), videosList)
         recyclerView?.adapter = adapterVideoList
         loadVideos()
 
@@ -161,28 +161,9 @@ class VideoFragment : Fragment() {
                     }
 
                 }
-                getMediaItems()
             }
         }
     }.start()
-    private fun getMediaItems(): MutableList<MediaItem> {
-        val mediaItems = ArrayList<MediaItem>()
 
-        for (video in videosList) {
-            mediaItems.add(
-                MediaItem.Builder()
-                    .setUri(video.data)
-                    .setMediaMetadata(getMetaData(video))
-                    .build()
-            )
-        }
-        return mediaItems
-    }
-
-    private fun getMetaData(video:Video): androidx.media3.common.MediaMetadata {
-        return androidx.media3.common.MediaMetadata.Builder()
-            .setTitle(video.title)
-            .build()
-    }
 }
 
