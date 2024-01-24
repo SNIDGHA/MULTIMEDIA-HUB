@@ -3,15 +3,12 @@ package com.example.myapplication
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -36,7 +33,7 @@ import java.io.Serializable
     @SuppressLint("SuspiciousIndentation")
     override fun onBindViewHolder(holder : MyViewHolder, position : Int) {
         val item = videosList[position]
-        val list: ArrayList<Video> = ArrayList()
+        //val list: ArrayList<Video> = ArrayList()
         holder.tv_title.text = item.title
         holder.tv_duration.text = item.duration
         Glide.with(context).load(item.data).into(holder.imgView_thumbnail)
@@ -44,7 +41,7 @@ import java.io.Serializable
            val intent = Intent(activity, VideoPlayerActivity::class.java)
                intent.putExtra("videoId", item.id)
                intent.putExtra("position", position)
-               intent.putExtra("LIST", list as Serializable)
+               intent.putExtra("LIST", videosList as Serializable)
                activity.startActivity(intent)
         }
     }
@@ -59,7 +56,6 @@ import java.io.Serializable
         var imgView_thumbnail : ImageView
         var tv_title : TextView
         var tv_duration : TextView
-
         init {
             tv_title = itemView.findViewById(R.id.tv_title)
             tv_duration = itemView.findViewById(R.id.tv_duration)

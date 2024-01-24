@@ -6,10 +6,9 @@ import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -37,7 +35,7 @@ class AudioFragment : Fragment() {
     private var param1 : String? = null
     private var param2 : String? = null
 
-   private lateinit var recyclerView : RecyclerView
+    private lateinit var recyclerView : RecyclerView
     private var noMusicTextView : TextView? = null
     private var songsList = ArrayList<AudioModel>()
 
@@ -98,7 +96,7 @@ class AudioFragment : Fragment() {
         val songUri : Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else
-            EXTERNAL_CONTENT_URI
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val cursor = requireContext().contentResolver.query(
             songUri,
             projection,
@@ -106,10 +104,10 @@ class AudioFragment : Fragment() {
             null,
             MediaStore.Audio.Media.TITLE
         )
-       if (cursor != null) while (cursor.moveToNext()) {
-                val songData = AudioModel(cursor.getString(1), cursor.getString(0), cursor.getString(2))
-                if (File(songData.path).exists()) songsList.add(songData)
-            }
+        if (cursor != null) while (cursor.moveToNext()) {
+            val songData = AudioModel(cursor.getString(1), cursor.getString(0), cursor.getString(2))
+            if (File(songData.path).exists()) songsList.add(songData)
+        }
         val idColumn = cursor!!.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
         val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
@@ -128,17 +126,17 @@ class AudioFragment : Fragment() {
         }
         Log.i("songChecker","SongsPut")
         Toast.makeText(context,songsList.size.toString(),Toast.LENGTH_SHORT).show()
-            if (songsList.size == 0) {
-                noMusicTextView!!.visibility = View.VISIBLE
-            } else {
-                //recyclerview
-                recyclerView.layoutManager = LinearLayoutManager(context)
-                recyclerView.adapter = MusicListAdapter(songsList, getMediaItems(),requireContext())
-            }
-        //getMediaItems()
+        if (songsList.size == 0) {
+            noMusicTextView!!.visibility = View.VISIBLE
+        } else {
+            //recyclerview
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.adapter = MusicListAdapter(songsList, requireContext())
         }
 
-    private fun checkPermission() : Boolean {
+    }
+
+    /*private fun checkPermission() : Boolean {
         val result = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -162,31 +160,12 @@ class AudioFragment : Fragment() {
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
             123
         )
-    }
+    }*/
 
-       override fun onResume() {
+    override fun onResume() {
         super.onResume()
         if (recyclerView != null) {
-            recyclerView!!.adapter = MusicListAdapter(songsList,getMediaItems(),requireContext())
+            recyclerView!!.adapter = MusicListAdapter(songsList,requireContext())
         }
-    }
-    private fun getMediaItems(): MutableList<MediaItem> {
-        val mediaItems = ArrayList<MediaItem>()
-
-        for (song in songsList) {
-            mediaItems.add(
-                MediaItem.Builder()
-                    .setUri(song.path)
-                    .setMediaMetadata(getMetaData(song))
-                    .build()
-            )
-        }
-        return mediaItems
-    }
-
-    private fun getMetaData(song:AudioModel): androidx.media3.common.MediaMetadata {
-        return androidx.media3.common.MediaMetadata.Builder()
-            .setTitle(song.title)
-            .build()
     }
 }

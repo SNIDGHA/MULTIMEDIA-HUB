@@ -151,7 +151,7 @@ class VideoFragment : Fragment() {
                             min
                         ) + ":" + java.lang.String.format(Locale.UK, "%02d", sec)
                     }
-                    videosList.add(Video(id,data, title , duration_formatted))
+                    videosList.add(Video(id,data.toString(), title , duration_formatted))
 
                     requireActivity().runOnUiThread {
                         /*adapterVideoList!!.notifyItemInserted(

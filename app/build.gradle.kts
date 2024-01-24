@@ -76,6 +76,7 @@ dependencies {
     implementation ("androidx.media3:media3-ui:1.0.2")
     implementation ("androidx.media3:media3-exoplayer-hls:1.0.2")
     implementation ("androidx.media3:media3-datasource-okhttp:1.0.2")
+    implementation("androidx.navigation:navigation-fragment:2.7.6")
 
 
     kotlinBuildToolsApiClasspath("com.github.bumptech.glide:compiler:4.16.0")

@@ -92,7 +92,7 @@ class ImageFragment : Fragment() {
         val projection =
             arrayOf(MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media.DISPLAY_NAME)
         val cursor =
-            requireContext().contentResolver.query(allImageUri, projection, null, null, null)
+            requireContext().contentResolver.query(allImageUri, projection, null, null,null)
 
         try {
             cursor!!.moveToFirst()

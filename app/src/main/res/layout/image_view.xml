@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/baseline_image_24"
-            android:background="@drawable/ic_launcher_background"
+            android:background="@color/white"
             android:id="@+id/imageView"/>
 
 
